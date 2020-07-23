@@ -70,11 +70,11 @@ for (int i = 0; i <= 100; ++i){     // 开始循环
 与`for-loop`很类似，`while-loop` 也可以用来做循环控制。但是相对简单一些，语句为
 ```cpp
 while(<state>){
-    // loop body
+    // 循环体
 }
 // 或者
 do {
-    // loop body
+    // 循环体
 }while(<state>)
 ```
 其中，每次进入循环前，都会检查`<state>`的值是否为`true`.若不是，则跳出循环。`do...while`的形式，则是一定执行一次`loop body`然后和普通的`while-loop`一样检查`<state>`，执行或跳出循环。
@@ -95,13 +95,120 @@ do{
 }while (i <= 100)
 ```
 
+### break 与continue
+如同其字面意思，`break`可以在任意时刻立刻结束循环体。`continue`则与字面意义稍微有些不通，它是在当前为止结束本次循环，并进行下一次循环。
+
+比如
+```cpp
+int i = 1;
+while (true){
+    i = i * 2;
+    break;
+}
+std::cout << i << std::endl; // 输出 2
+
+i = 0;
+while (i < 5){
+    i = i + 1;
+    continue;
+    i = i + 100;    //这行永远不会被执行到
+}
+std::cout << i << std::endl; // 输出 5
+```
+
+在第一个例子中，第一次循环进入后，`i`的值从1 变为2，然后遇到了`break`语句，退出循环。在下一行输出的时候，i的值就是2。 
+
+在第二个例子中，每次进入循环，`i`增加1之后，遇到`continue`，立刻开始新的循环，所以`i = i + 100;`这行永远不会被执行到。
+
 ## 条件
+
+### If-statement
 讲完了第一种情况，我们来说说第二种情况。接着来讲讲条件。举另外一个例子，假如我们要计算`1~100`里所有奇数的和。我们已经知道了循环，那么代码可以是这样：
 
 ```cpp
 int result = 0;
-for (int i = 0; i <= 100; ++i){
-    _____请填空____
+for (int i = 0; i <= 100; i=i+1){
+    // _____请填空____
 }
 ```
 在请填空处，我们如何只让`result`与奇数的`i`相加，而不管偶数的`i`呢？
+
+聪明的你可能想到，如果你把`i=i+1`换成`i=i+2`，那“请填空”处只要写 `result = result + i`不就可以了？
+
+没错。任何“需求”都有无数种实现的方法。但这里，我们假设其他的代码都是固定的，你只能提供“请填空”处的代码，你该怎么办呢？
+
+我们需要做一个判断，如果`i`是奇数，我们什么都不做，如果`i`是偶数，我们就把它加到`result`上。听起来不错对不对？
+
+对于这种单一条件的判断，我们会使用`if-statement`。 它长这样：
+
+```cpp
+if (condition-statement){
+    // 分支1
+}
+else {
+    // 分支2
+}
+```
+`condition-statement`是一个用来判断的条件，在这里，如果`condition-statement` 满足，则执行 分支1 块的指令，否则执行 分支2 块。
+
+> 注意，else 在这里是可选的，即你可以有`if` 而没有与之对应的`else`语句。
+
+这个应该很好理解，只要稍微有英语基础的就能理解`if ... else`的意思。当然，如果你有多个条件要判断，比如计算学生的绩点，我们常常会见到这样的代码
+```cpp
+int score; grade;
+// get score input;
+if (score >= 90){
+    grade = 4; // A
+} else if (score >= 80){
+    grade = 3; // B
+} else if (score >= 70){
+    grade = 2; // C
+} else if (score >= 60){
+    grade = 1; // D
+} else {
+    grade = 0; // F
+}
+```
+
+这个代码里，它先判断了`score`是否大于90.如果是，则进入第一个分支（100-90)。如果不是，则判断是否大于80，如是则进入第二个分支（89-80），直到覆盖所有的情况。
+
+回到我们开始的问题，在`请填空`处填入什么合理呢？这里笔者给出一个参考答案：
+```
+if (i % 2 == 1){
+    result = result + i;
+}
+```
+`i % 2`是`i`对`2`进行求余的操作。如果余数是`1`，那么`i`就是奇数。通过这个方法，我们可以忽略所有偶数的`i`，达到奇数求和的目的。
+
+除了`if-statement`之外，还有两种做条件判断的方法。一种是`switch-statement`, 另一种就是`condition-operator`条件运算符。
+
+
+### Switch-statement
+`if-statement`只能处理`<condition-statement>`为真或假的情况。那如果`<condition-statement>`有更多值呢？
+
+比如`<condition-statement>`是范围1～10的数字，而我们要就每种情况进行不通逻辑的处理。当然读者可能说用刚刚讲到的 `if-else if-else`串来写，那代码看起来很丑，所以有了`Switch-statement`来进行多分支处理。 
+
+`Switch-statement` 的语法是：
+
+```cpp
+switch(<condition-statement>){
+    case condition-A:
+        branch-A;
+        break;
+    case condition-B
+        branch-B;
+        break;
+    ...
+    case condition-X
+        branch-X;        
+        break;
+    default:
+        branch-default;
+}
+```
+
+### Condition-operator
+
+`condition-operator` 的用法是： `<condition-statement>?<branch-A>:<branch-B>`。如果`<condition-statement>`中条件为真，则执行`<branch-A>`，否则执行`<branch-B>`. 
+
+仔细观察后读者可能会发现和`if-statement` 很像，唯一的不同是`if-statement` 的 `else`语句可以省略，而`condition-operator`不能省略`<condition-statement>`不为真的分支。
